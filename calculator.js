@@ -1,4 +1,4 @@
-const previous = document.getElementById("previous")
+        const previous = document.getElementById("previous")
         const newest = document.getElementById("newest")
         // add numbers by clicking buttons
         const numbers = document.getElementsByClassName("number")
