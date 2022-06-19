@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            user-select: none;
+        }
+        body {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: rgb(17,27,33);
+        }
+        #all {
+            width: fit-content;
+            height: 70%;
+            display: flex;
+            flex-direction: row;
+            box-shadow: 0px 0px 4px rgb(0,168,132);
+            border-radius: 10px;
+        }
+        #calculator {
+            height: 100%;
+            aspect-ratio: 2/3;
+            
+            border-top-left-radius: 10px;
+            border-bottom-left-radius: 10px;
+            display: grid;
+            grid-template-rows: 1fr 4fr;
+            grid-template-columns: 1fr;
+        }
+        #history {
+            height: 100%;
+            aspect-ratio: 2/3;
+            border-top-right-radius: 10px;
+            border-bottom-right-radius: 10px;
+            background-color: rgba(50, 63, 72, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-y: scroll;
+        }
+        #history::-webkit-scrollbar{
+            border-radius: 10px !important;
+        }
+        #history::-webkit-scrollbar-track {
+            background-color: rgb(0,168,132);
+            border-radius: 10px;
+        }
+        #history::-webkit-scrollbar-thumb {
+            background-color: rgb(17,27,33);
+            border-radius: 10px;
+        }
+        .history-box {
+            width: 90%;
+            height: fit-content;
+            background-color: rgba(255,255,255,0.2);
+            margin: 5px;
+            padding: 5px;
+            word-break: break-all;
+        }
+        .history-box .answer {
+            font-size: 120%;
+            color: rgb(0,168,132);
+            font-weight: bolder;
+        }
+
+        #output {
+            background-color: rgb(0,168,132);
+            border-top-left-radius: 10px;
+            border: 1px solid rgb(17,27,33);
+            font-weight: bolder;
+            display: grid;
+            grid-template-rows: 1fr 2fr;
+            padding: 10px;
+        }
+        #output #previous {
+            display: flex;
+            align-items: center;
+            justify-content: end;
+            font-size: 100%;
+        }
+        #output #newest {
+            display: flex;
+            align-items: center;
+            justify-content: end;
+            font-size: 120%;
+        }
+        #keys {
+            display: grid;
+            grid-template-columns: repeat(4,1fr);
+            padding: 10px;
+            grid-gap: 10px;
+        }
+        #keys button {
+            outline: none;
+            border: none;
+            background-color: rgba(50, 63, 72, 0.1);
+            border-top-left-radius: 10px;
+            border-bottom-right-radius: 10px;
+            cursor: pointer;
+            
+            color: white;
+            font-size: 100%;
+        }
+        #keys button:hover {
+            background-color: rgba(0,0,0,0.2);
+            box-shadow: 0px 0px 4px rgb(0,168,132);
+        }
+        #keys #equal {
+            grid-column: span 2;
+        }
+
+        @media only screen and (max-width:700px){
+            #all {
+                height: 90%;
+                flex-direction: column;
+            }
+            #output {
+                border-top-right-radius: 10px;
+            }
+            #history {
+                border-top-right-radius: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="all">
+        <div id="calculator">
+            <div id="output">
+                <div id="previous"></div>
+                <div id="newest"></div>
+            </div>
+            <div id="keys">
+                <button id="clear">C</button>
+                <button id="delete">Del</button>
+                <button id="sqrt">Sqrt</button>
+                <button class="oprator">/</button>
+                <button class="number">7</button>
+                <button class="number">8</button>
+                <button class="number">9</button>
+                <button class="oprator">*</button>
+                <button class="number">4</button>
+                <button class="number">5</button>
+                <button class="number">6</button>
+                <button class="oprator">-</button>
+                <button class="number">1</button>
+                <button class="number">2</button>
+                <button class="number">3</button>
+                <button class="oprator">+</button>
+                <button class="number">0</button>
+                <button id="dot">.</button>
+                <button id="equal">=</button>
+            </div>
+        </div>
+        <div id="history">
+        </div>
+    </div>
+    <script>
+        const previous = document.getElementById("previous")
+        const newest = document.getElementById("newest")
+        // add numbers by clicking buttons
+        const numbers = document.getElementsByClassName("number")
+        for(const number of numbers){
+            number.onclick = function(){
+                if(isEqual){return}
+                if(newest.innerText.length == 20){return}
+                newest.innerText += number.innerText
+            }
+        }
+        // clear button
+        const clear = document.getElementById("clear")
+        clear.onclick = function(){
+            previous.innerText = ""
+            newest.innerText = ""
+            isOprator = false
+            isEqual = false
+        }
+        // del button
+        const del = document.getElementById("delete")
+        del.onclick = function(){
+            if(isEqual){return}
+            newest.innerText = newest.innerText.slice(0,newest.innerText.length - 1)
+        }
+        // dot button
+        const dot = document.getElementById("dot")
+        dot.onclick = function(){
+            if(newest.innerText.indexOf(".") != -1){return}
+            if(isEqual){return}
+            newest.innerText += "."
+        }
+        // oprator buttons
+        const oprators = document.getElementsByClassName("oprator")
+        let isOprator = false
+        for(const oprator of oprators){
+            oprator.onclick = function(){
+                if(isOprator){return}
+                if(newest.innerText == ""){return}
+                isOprator= true
+                isEqual = false
+                previous.innerText = newest.innerText + oprator.innerText
+                newest.innerText = ""
+            }
+        }
+        // sqrt button
+        const sqrt = document.getElementById("sqrt")
+        sqrt.onclick = function(){
+            if(newest.innerText == ""){return}
+            previous.innerText = `sqrt(${newest.innerText})`
+            solve = Math.sqrt(parseFloat(newest.innerText))
+            newest.innerText = solve
+            isEqual = true
+
+            const historyBox = document.createElement("div")
+            historyBox.className = "history-box"
+            const numbers = document.createElement("p")
+            numbers.className = "numbers"
+            numbers.innerText = previous.innerText
+            const answer = document.createElement("p")
+            answer.className = "answer"
+            answer.innerText = solve
+            historyBox.appendChild(numbers)
+            historyBox.appendChild(answer)
+            history.appendChild(historyBox)
+            history.scrollBy(0,5000)
+        }
+        // equal buttton
+        const equal = document.getElementById("equal")
+        const history = document.getElementById("history")
+        let isEqual = false
+        equal.onclick = function(){
+            if(!isOprator){return}
+            if(newest.innerText == ""){return}
+            if(isEqual){return}
+            
+            let solve;
+            if(previous.innerText.charAt(previous.innerText.length - 1) == "+"){
+                solve = parseFloat(previous.innerText.slice(0,previous.innerText.length - 1)) + parseFloat(newest.innerText)
+                previous.innerText += newest.innerText + "="
+                newest.innerText = solve
+            }
+            if(previous.innerText.charAt(previous.innerText.length - 1) == "-"){
+                solve = parseFloat(previous.innerText.slice(0,previous.innerText.length - 1)) - parseFloat(newest.innerText)
+                previous.innerText += newest.innerText + "="
+                newest.innerText = solve
+            }
+            if(previous.innerText.charAt(previous.innerText.length - 1) == "*"){
+                solve = parseFloat(previous.innerText.slice(0,previous.innerText.length - 1)) * parseFloat(newest.innerText)
+                previous.innerText += newest.innerText + "="
+                newest.innerText = solve
+            }
+            if(previous.innerText.charAt(previous.innerText.length - 1) == "/"){
+                solve = parseFloat(previous.innerText.slice(0,previous.innerText.length - 1)) / parseFloat(newest.innerText)
+                previous.innerText += newest.innerText + "="
+                newest.innerText = solve
+            }
+
+            const historyBox = document.createElement("div")
+            historyBox.className = "history-box"
+            const numbers = document.createElement("p")
+            numbers.className = "numbers"
+            numbers.innerText = previous.innerText
+            const answer = document.createElement("p")
+            answer.className = "answer"
+            answer.innerText = solve
+            historyBox.appendChild(numbers)
+            historyBox.appendChild(answer)
+            history.appendChild(historyBox)
+            history.scrollBy(0,5000)
+            isOprator = false
+            isEqual = true
+            
+        }
+    </script>
+</body>
+</html>
